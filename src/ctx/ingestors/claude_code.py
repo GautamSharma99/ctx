@@ -14,9 +14,15 @@ FILE_TOOLS = {"Edit", "Write", "NotebookEdit", "Read", "MultiEdit"}
 
 
 def _project_slug(project_root: Path) -> str:
-    """Claude Code encodes project directories as `/foo/bar` → `-foo-bar`."""
+    """Claude Code encodes project directories as `/foo/bar` → `-foo-bar`.
+
+    On Windows, resolved paths look like `C:\\Users\\foo\\bar`, which Claude
+    Code encodes as `C--Users-foo-bar` (both `:` and `\\` become `-`).
+    """
     s = str(project_root.resolve())
-    return s.replace("/", "-")
+    for ch in ("/", "\\", ":"):
+        s = s.replace(ch, "-")
+    return s
 
 
 def _flatten_content(content: Any) -> tuple[str, list[dict[str, Any]]]:

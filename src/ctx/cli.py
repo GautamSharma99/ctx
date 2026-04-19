@@ -34,6 +34,16 @@ app = typer.Typer(
     no_args_is_help=True,
     add_completion=False,
 )
+import sys as _sys
+# On Windows, the default console encoding (cp1252) can't render unicode
+# glyphs like → that rich's markup and our messages use. Reconfigure stdio
+# to UTF-8 so rich renders cleanly.
+for _stream in (_sys.stdout, _sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
 console = Console()
 err_console = Console(stderr=True)
 
