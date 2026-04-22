@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ctx — Git for LLM Context | Portable Session Handoff</title>
+  <meta name="description" content="Snapshot a dying LLM session, brief the next LLM in 30 seconds. Cross-provider, local-first, confidence-aware context handoff for developers.">
+  <meta name="keywords" content="ctx, LLM context, AI session handoff, developer tools, CLI, Claude, ChatGPT, Cursor">
+  <meta name="author" content="ctx">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ======= NAVBAR ======= -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <div class="logo-icon">ctx</div>
+        <span>ctx</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#comparison">Compare</a></li>
+        <li><a href="#format">Format</a></li>
+      </ul>
+      <a href="https://github.com" class="nav-cta" target="_blank" id="nav-github-btn">★ Star on GitHub</a>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">☰</button>
+    </div>
+  </nav>
+
+
+  <!-- ======= HERO ======= -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-effects">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="hero-grid"></div>
+    </div>
+
+    <div class="container">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Open Source  •  v0.1.0  •  Python CLI
+      </div>
+
+      <h1 class="hero-title">
+        <span class="line"><span class="gradient-text">Git</span> for LLM</span>
+        <span class="line">Context.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Your LLM session died. <strong>ctx pack</strong>, <strong>ctx prime</strong>, paste — keep going in any other tool in 30 seconds.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#how-it-works" class="btn-primary" id="hero-cta-learn">
+          See How It Works →
+        </a>
+        <a href="https://github.com" class="btn-secondary" target="_blank" id="hero-cta-github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+
+      <div class="hero-terminal">
+        <div class="terminal">
+          <div class="terminal-header">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+            <span class="terminal-title">~/my-project — ctx</span>
+          </div>
+          <div class="terminal-body">
+            <div class="terminal-line">
+              <span class="terminal-comment"># Session died? Credits ran out? Need a second opinion?</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command">ctx pack</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-output">✓ Ingested session c12eefd0 (58 turns, 8.5k tokens)</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-output">✓ Distilled → .ctx/current.md (2k budget, conf: high)</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command">ctx prime --target chatgpt --copy</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-output">✓ Briefing copied to clipboard (1,847 tokens)</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-comment"># Paste into ChatGPT → it picks up where Claude left off</span>
+            </div>
+            <div class="terminal-line">
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-cursor"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= THE PROBLEM ======= -->
+  <section class="problem-section" id="problem">
+    <div class="container">
+      <div class="section-label animate-on-scroll">The Problem</div>
+      <h2 class="section-heading animate-on-scroll">
+        The <span class="gradient-text">10-minute tax</span><br>you pay every time
+      </h2>
+      <p class="section-subheading animate-on-scroll" style="margin: 0 auto;">
+        You're deep in a coding session with an LLM. Then one of these happens — and you lose 10–30 minutes re-explaining everything from scratch.
+      </p>
+
+      <div class="problem-cards">
+        <div class="problem-card animate-on-scroll">
+          <div class="problem-icon">💳</div>
+          <h3>Credits Exhausted</h3>
+          <p>API quota or subscription tier caps hit. You switch providers immediately but lose all built-up context.</p>
+        </div>
+        <div class="problem-card animate-on-scroll">
+          <div class="problem-icon">🧠</div>
+          <h3>Context Window Full</h3>
+          <p>The model starts forgetting earlier decisions. You need a fresh session — but it doesn't know what happened.</p>
+        </div>
+        <div class="problem-card animate-on-scroll">
+          <div class="problem-icon">⚡</div>
+          <h3>Provider Outage</h3>
+          <p>The service goes down. You need a fallback fast. Re-briefing a different LLM from scratch is painful.</p>
+        </div>
+        <div class="problem-card animate-on-scroll">
+          <div class="problem-icon">🔀</div>
+          <h3>Second Opinion</h3>
+          <p>You want to cross-check decisions with a different model — but first you'd have to explain the entire project state.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= HOW IT WORKS ======= -->
+  <section class="how-section" id="how-it-works">
+    <div class="container">
+      <div class="section-label animate-on-scroll">How It Works</div>
+      <h2 class="section-heading animate-on-scroll">
+        Three commands.<br><span class="gradient-text">30 seconds.</span>
+      </h2>
+      <p class="section-subheading animate-on-scroll">
+        Pack your session, prime the target, paste. The new LLM picks up exactly where the old one left off.
+      </p>
+
+      <div class="flow-steps animate-on-scroll">
+        <div class="flow-step">
+          <div class="step-number">1</div>
+          <h4>Pack</h4>
+          <code>ctx pack</code>
+          <p>Reads your last LLM session, distills 50k tokens into a 2k-token instructional snapshot with confidence ratings.</p>
+        </div>
+        <div class="flow-step">
+          <div class="step-number">2</div>
+          <h4>Prime</h4>
+          <code>ctx prime --target chatgpt</code>
+          <p>Wraps the snapshot in role framing, anti-repetition guards, and verification hooks tailored for the target LLM.</p>
+        </div>
+        <div class="flow-step">
+          <div class="step-number">3</div>
+          <h4>Paste</h4>
+          <code>--copy</code>
+          <p>The briefing is on your clipboard. Paste into any LLM. It knows what to do, what's done, and what not to redo.</p>
+        </div>
+      </div>
+
+      <div class="pipeline-visual animate-on-scroll">
+        <div class="section-label" style="justify-content: center; margin-top: 3rem;">The Pipeline</div>
+        <div class="pipeline-flow">
+          <div class="pipeline-stage">
+            <div class="stage-icon">📥</div>
+            <h4>Ingestor</h4>
+            <p>Reads raw session JSONL from Claude Code</p>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="stage-icon">🧬</div>
+            <h4>Distiller</h4>
+            <p>LLM-powered compression with confidence</p>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="stage-icon">💾</div>
+            <h4>Storage</h4>
+            <p>Plain markdown & JSON in .ctx/</p>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="stage-icon">🎯</div>
+            <h4>Composer</h4>
+            <p>Instructional framing & guard rails</p>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-stage">
+            <div class="stage-icon">🔌</div>
+            <h4>Adapter</h4>
+            <p>Target-specific rendering</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= FEATURES ======= -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-label animate-on-scroll">Features</div>
+      <h2 class="section-heading animate-on-scroll">
+        Built different.<br><span class="gradient-text-warm">By design.</span>
+      </h2>
+      <p class="section-subheading animate-on-scroll">
+        Every feature exists to maximize task-resumption fidelity across providers.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon cyan">🌐</div>
+          <h3>Cross-Provider Portability</h3>
+          <p>The entire point. Move context between Claude, ChatGPT, Cursor, and any future LLM. Not locked to one ecosystem.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon violet">🎯</div>
+          <h3>Confidence-Aware Briefings</h3>
+          <p>Every section is rated high / medium / low. Low-confidence claims are flagged with explicit "verify before relying" warnings.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon green">🔒</div>
+          <h3>Local-First & Private</h3>
+          <p>No cloud. No database. No telemetry. Transcripts contain code and secrets — everything stays on your disk as plain files.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon pink">📝</div>
+          <h3>Hand-Editable Snapshots</h3>
+          <p>Snapshots are markdown. Users can open and fix mistakes manually. Boring, hand-editable formats are a feature, not a limitation.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon orange">🛡️</div>
+          <h3>Anti-Repetition Guards</h3>
+          <p>The briefing explicitly tells the next LLM: don't restart, don't re-implement finished work, don't retry failed approaches.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon cyan">🔌</div>
+          <h3>Extensible Pipeline</h3>
+          <p>Add new sources (ingestors) or targets (adapters) with a single file. The middle three stages never change.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= COMPARISON ======= -->
+  <section class="comparison-section" id="comparison">
+    <div class="container">
+      <div class="section-label animate-on-scroll" style="justify-content: center;">How ctx compares</div>
+      <h2 class="section-heading animate-on-scroll">
+        Not a memory SDK.<br><span class="gradient-text">A handoff tool.</span>
+      </h2>
+      <p class="section-subheading animate-on-scroll" style="margin: 0 auto;">
+        The market is full of memory systems for app builders. Nobody owns the developer mid-task handoff problem.
+      </p>
+
+      <div class="comparison-table-wrapper animate-on-scroll">
+        <table class="comparison-table" id="comparison-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Audience</th>
+              <th>Cross-Provider</th>
+              <th>Open Source</th>
+              <th>Confidence-Aware</th>
+              <th>Lightweight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>mem0</td>
+              <td>App developers</td>
+              <td><span class="cross">N/A (SDK)</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="partial">Medium</span></td>
+            </tr>
+            <tr>
+              <td>Letta / MemGPT</td>
+              <td>App developers</td>
+              <td><span class="cross">N/A (SDK)</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">Heavy</span></td>
+            </tr>
+            <tr>
+              <td>Zep</td>
+              <td>App developers</td>
+              <td><span class="cross">N/A (SDK)</span></td>
+              <td><span class="partial">Partial</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">Heavy</span></td>
+            </tr>
+            <tr>
+              <td>Pieces</td>
+              <td>End-user devs</td>
+              <td><span class="partial">Some</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">Heavy</span></td>
+            </tr>
+            <tr>
+              <td>Claude MEMORY.md</td>
+              <td>Claude only</td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">N/A</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Cursor Rules</td>
+              <td>Cursor only</td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">N/A</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>ctx ⚡</strong></td>
+              <td><strong>End-user devs</strong></td>
+              <td><span class="check"><strong>✓ Core goal</strong></span></td>
+              <td><span class="check"><strong>✓</strong></span></td>
+              <td><span class="check"><strong>✓</strong></span></td>
+              <td><span class="check"><strong>✓</strong></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= SNAPSHOT FORMAT ======= -->
+  <section class="snapshot-section" id="format">
+    <div class="container">
+      <div class="section-label animate-on-scroll">The .ctx Format</div>
+      <h2 class="section-heading animate-on-scroll">
+        A format designed to<br><span class="gradient-text-warm">become a standard.</span>
+      </h2>
+
+      <div class="snapshot-layout">
+        <div class="snapshot-info animate-on-scroll">
+          <h3>Versioned. Markdown. Boring on purpose.</h3>
+          <p>
+            The <code>.ctx</code> snapshot format is designed like <code>.editorconfig</code> — boring enough that other tools could eventually adopt it natively.
+          </p>
+          <ul>
+            <li><span class="checkmark">✓</span> <strong>Versioned</strong> — <code>ctx_version</code> and <code>prompt_version</code> allow the format to evolve without breaking old snapshots</li>
+            <li><span class="checkmark">✓</span> <strong>Self-contained</strong> — all information to resume a task is in one file</li>
+            <li><span class="checkmark">✓</span> <strong>Confidence-aware</strong> — the Confidence Report section is mandatory and surfaced in every command</li>
+            <li><span class="checkmark">✓</span> <strong>Hand-editable</strong> — it's markdown — open it, fix it, save it</li>
+            <li><span class="checkmark">✓</span> <strong>Diff-friendly</strong> — plain text plays nicely with git</li>
+          </ul>
+        </div>
+
+        <div class="snapshot-preview animate-on-scroll">
+          <div class="snapshot-code">
+            <div class="snapshot-code-header">
+              <span>📄 .ctx/current.md</span>
+            </div>
+            <pre><span class="key">---</span>
+<span class="key">ctx_version:</span> <span class="value">0.1</span>
+<span class="key">project:</span> <span class="value">multiagent</span>
+<span class="key">distiller_model:</span> <span class="value">claude-sonnet-4-6</span>
+<span class="key">budget_tokens:</span> <span class="value">2000</span>
+<span class="key">---</span>
+
+<span class="heading"># Task</span>
+Building a multi-agent orchestration layer
+with tool-use routing and state persistence.
+
+<span class="heading"># Status</span>
+Core agent loop ✓ | Tool router ✓ | State: in progress
+
+<span class="heading"># Decisions</span>
+- Use SQLite for state. <strong>Why:</strong> no server dependency.
+  <span class="conf">_conf: high_</span>
+- Event sourcing over CRUD. <strong>Why:</strong> audit trail.
+  <span class="conf">_conf: medium_</span>
+
+<span class="heading"># Tried & failed</span>
+- Redis for state — overkill for single-user. Don't redo.
+
+<span class="heading"># Next step</span>
+Implement the state persistence layer in <span class="value">store.py</span>
+
+<span class="heading"># Confidence Report</span>
+- Overall: <span class="conf">high</span>
+- High: Task, Decisions, Next step
+- Medium: Code map
+- Could not determine: backward compat requirements</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= CTA ======= -->
+  <section class="cta-section" id="get-started">
+    <div class="container">
+      <div class="cta-card animate-on-scroll">
+        <h2>Stop re-explaining.<br><span class="gradient-text">Start continuing.</span></h2>
+        <p>Install ctx in 30 seconds. The next time your session dies, you'll be glad you did.</p>
+
+        <div class="hero-actions" style="margin-bottom: 0;">
+          <a href="https://github.com" class="btn-primary" id="cta-github-btn" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            Get Started on GitHub
+          </a>
+          <a href="#how-it-works" class="btn-secondary" id="cta-docs-btn">Read the Docs</a>
+        </div>
+
+        <div class="cta-install-block" id="install-block" onclick="copyInstall()">
+          <span class="dollar">$</span>
+          <span>pip install ctx-llm</span>
+          <span class="copy-hint">click to copy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-left">
+        <div class="logo-icon">ctx</div>
+        <span>ctx v0.1.0 — Built with obsessive attention to session handoff.</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        <li><a href="#how-it-works">Docs</a></li>
+        <li><a href="#format">Format Spec</a></li>
+      </ul>
+    </div>
+  </footer>
+
+
+  <!-- ======= SCRIPTS ======= -->
+  <script>
+    // --- Scroll-triggered animations ---
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+      observer.observe(el);
+    });
+
+    // --- Navbar scroll effect ---
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // --- Smooth scroll for anchor links ---
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // --- Copy install command ---
+    function copyInstall() {
+      const block = document.getElementById('install-block');
+      navigator.clipboard.writeText('pip install ctx-llm').then(() => {
+        const hint = block.querySelector('.copy-hint');
+        hint.textContent = 'copied!';
+        hint.style.color = '#10b981';
+        setTimeout(() => {
+          hint.textContent = 'click to copy';
+          hint.style.color = '';
+        }, 2000);
+      });
+    }
+
+    // --- Mobile menu toggle ---
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    let mobileMenuOpen = false;
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenuOpen = !mobileMenuOpen;
+      if (mobileMenuOpen) {
+        navLinks.style.display = 'flex';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '100%';
+        navLinks.style.left = '0';
+        navLinks.style.right = '0';
+        navLinks.style.background = 'rgba(10, 10, 15, 0.98)';
+        navLinks.style.padding = '1.5rem';
+        navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+        navLinks.style.gap = '1.2rem';
+        mobileMenuBtn.textContent = '✕';
+      } else {
+        navLinks.style.display = '';
+        navLinks.style.flexDirection = '';
+        navLinks.style.position = '';
+        navLinks.style.top = '';
+        navLinks.style.left = '';
+        navLinks.style.right = '';
+        navLinks.style.background = '';
+        navLinks.style.padding = '';
+        navLinks.style.borderBottom = '';
+        navLinks.style.gap = '';
+        mobileMenuBtn.textContent = '☰';
+      }
+    });
+
+    // --- Parallax orb effect on mouse move ---
+    const heroSection = document.querySelector('.hero');
+    const orbs = document.querySelectorAll('.orb');
+    heroSection.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      orbs.forEach((orb, i) => {
+        const speed = (i + 1) * 12;
+        orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+    });
+
+    // --- Stagger animation for problem cards, features, etc. ---
+    const staggerObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const children = entry.target.querySelectorAll('.animate-on-scroll');
+          children.forEach((child, i) => {
+            child.style.transitionDelay = `${i * 0.1}s`;
+            child.classList.add('visible');
+          });
+        }
+      });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.problem-cards, .features-grid, .flow-steps').forEach(el => {
+      staggerObserver.observe(el);
+    });
+  </script>
+
+</body>
+</html>
