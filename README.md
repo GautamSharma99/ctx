@@ -2,6 +2,8 @@
 
 > *Git for LLM context.* Snapshot a dying session, brief the next LLM in 30 seconds, anywhere.
 
+🌐 **[Live Site →](https://ctx-pi.vercel.app/)**
+
 A small, local-first CLI that distills a long LLM coding session into a compact, instructional briefing you can paste into any other LLM (ChatGPT, Claude, Cursor, a fresh session) and keep working without redoing finished parts.
 
 
